@@ -4,7 +4,7 @@ const app = express()
 const porta = 3001
 
 app.get('/', (req, res) => {
-  console.log('Servidor respondendo na porta:', porta)
+  console.log('Servidor respondendo na porta: com --watch', porta)
   const docname = 'Olá Pessoal';
   const content = 'Olá, bem-vindo ao servidor básico em node, agora usando express'
 

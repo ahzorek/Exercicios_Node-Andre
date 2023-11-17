@@ -1,0 +1,26 @@
+{
+  "name": "form_and_api",
+  "version": "0.0.1",
+  "description": "A form. And an Api. Req, res. Life, Death.",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon api.js",
+    "start": "node api.js"
+  },
+  "keywords": [
+    "entra21",
+    "req",
+    "res",
+    "node"
+  ],
+  "author": "Andre",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

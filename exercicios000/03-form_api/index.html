@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro Aluno</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="js/main.js" defer></script>
+
+</head>
+
+<body>
+  <div class="wrapper">
+    <section class="institucional">
+      <div class="img">
+        <img src="assets/img/school_onboarding.png" alt="Ilustração: mátriculas abertas">
+      </div>
+      <div class="text">
+        <h1>Oportunidade de Matrícula</h1>
+        <p>Nossa instituição, reconhecida pela sua excelência, oferece a você a oportunidade de fazer parte de uma
+          comunidade de aprendizado inspiradora.</p>
+        <p>Ao se matricular conosco, você se une a uma tradição de conquistas e exploração do conhecimento.</p>
+      </div>
+    </section>
+
+    <form method="post" class="cadastro-aluno" id="cadastroForm"> <!-- Added id for easy access -->
+      <fieldset id="informacoesAluno">
+        <legend>Informações Aluno</legend>
+        <input title="Primeiro nome" type="text" name="firstName" id="firstName" placeholder="Nome" required>
+        <input title="Sobrenome" type="text" name="lastName" id="lastName" placeholder="Sobrenome" required>
+        <input title="Data de nascimento" type="date" name="dateOfBirth" id="dateOfBirth"
+          placeholder="Data de nascimento" min="2000-01-01" max="2017-12-31" required>
+        <input title="Série a frequentar (1 a 9)" type="number" inputmode="numeric" name="classAttending"
+          id="classAttending" placeholder="Série" min="1" max="9" step="1" required>
+        <fieldset>
+          <legend>Gênero</legend>
+          <ul>
+            <li>
+              <input type="radio" name="gender" id="male">
+              <label for="male">Masculino</label>
+            </li>
+            <li>
+              <input type="radio" name="gender" id="female">
+              <label for="female">Feminino</label>
+            </li>
+            <li>
+              <input type="radio" name="gender" id="nonbinary">
+              <label for="nonbinary">Não-binário</label>
+            </li>
+          </ul>
+        </fieldset>
+      </fieldset>
+
+      <fieldset id="informacoesPais">
+        <legend>Informações dos Pais</legend>
+        <input type="text" name="mothersName" id="mothersName" placeholder="Nome da mãe (opcional)">
+        <input type="text" name="fathersName" id="fathersName" placeholder="Nome do pai (opcional)">
+      </fieldset>
+
+      <fieldset id="informacoesContato">
+        <legend>Informações de Contato</legend>
+        <input title="Rua, número, bairro" placeholder="Endereço" type="text" name="address" id="address"
+          autocomplete="street-address" required>
+        <input title="Quadra, bloco, prédio, número apartamento" placeholder="Complemento (opcional)" type="text"
+          name="address2" id="address2" autocomplete="address-line-2">
+        <input title="Código postal" placeholder="CEP" type="text" inputmode="numeric" name="postalCode" id="postalCode"
+          autocomplete="postal-code" required>
+        <input title="Cidade" placeholder="Cidade" type="text" name="city" id="city" required>
+        <input title="Estado" placeholder="Estado" class="datalist" list="estados" id="stateRegion" name="stateRegion"
+          required>
+        <datalist id="estados">
+          <option value="Acre">
+          <option value="Alagoas">
+          <option value="Amapá">
+          <option value="Amazonas">
+          <option value="Bahia">
+          <option value="Ceará">
+          <option value="Distrito Federal">
+          <option value="Espírito Santo">
+          <option value="Goiás">
+          <option value="Maranhão">
+          <option value="Mato Grosso">
+          <option value="Mato Grosso do Sul">
+          <option value="Minas Gerais">
+          <option value="Pará">
+          <option value="Paraíba">
+          <option value="Paraná">
+          <option value="Pernambuco">
+          <option value="Piauí">
+          <option value="Rio de Janeiro">
+          <option value="Rio Grande do Norte">
+          <option value="Rio Grande do Sul">
+          <option value="Rondônia">
+          <option value="Roraima">
+          <option value="Santa Catarina">
+          <option value="São Paulo">
+          <option value="Sergipe">
+          <option value="Tocantins">
+          <option value="Exterior">
+        </datalist>
+        <input placeholder="Número Telefone" type="tel" inputmode="numeric" name="telephone" id="telephone" required>
+        <input placeholder="Número WhatsApp (opcional)" type="tel" inputmode="numeric" name="wpp" id="wpp">
+        <input type="email" placeholder="E-mail" name="email" id="email" title="Deve ser um email válido" required>
+      </fieldset>
+
+      <fieldset id="necessidadesEspeciais">
+        <legend>Necessidades Especiais</legend>
+        <ul>
+          <li>
+            <input type="checkbox" name="def_auditiva" id="def_auditiva">
+            <label for="def_auditiva">Deficiência Auditiva</label>
+          </li>
+          <li>
+            <input type="checkbox" name="def_motora" id="def_motora">
+            <label for="def_motora">Deficiência Motora</label>
+          </li>
+          <li>
+            <input type="checkbox" name="def_visual" id="def_visual">
+            <label for="def_visual">Deficiência Visual</label>
+          </li>
+          <li>
+            <input type="checkbox" name="cerebral_paral" id="cerebral_paral">
+            <label for="cerebral_paral">Paralisia Cerebral</label>
+          </li>
+          <li>
+            <input type="checkbox" name="espectro" id="espectro">
+            <label for="espectro">Perturbação do Espectro Autista</label>
+          </li>
+          <li>
+            <input type="checkbox" name="psicologico" id="psicologico">
+            <label for="psicologico">Perturbação de Foro Psicológico</label>
+          </li>
+          <li>
+            <input type="checkbox" name="deficit_apre" id="deficit_apre">
+            <label for="deficit_apre">Distúrbios de Aprendizagem</label>
+          </li>
+          <li>
+            <input type="checkbox" name="high_skills" id="high_skills">
+            <label for="high_skills">Altas Habilidades</label>
+          </li>
+        </ul>
+      </fieldset>
+      <button type="submit">Enviar</button>
+      <button type="reset">Limpar</button>
+    </form>
+
+    <div class="filler"></div>
+  </div>
+</body>
+
+</html>
