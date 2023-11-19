@@ -3,13 +3,12 @@ const conversorJson = require("body-parser")
 const cors = require("cors")
 const app = express() //A função express cria uma instância de todo o framework express em app
 
-app.use(conversorJson.urlencoded({ extended: false })) //middleware
+//middleware
+app.use(conversorJson.urlencoded({ extended: false }))
 app.use(conversorJson.json())
 
-app.use(function (req, resp, next) {
+app.use((_, resp, next) => {
   resp.header("Access-Control-Allow-Origin", "*")
-  //resp.header("Access-Control-Allow-Origin", "http://localhost:8080")
-
   app.use(cors())
   next()
 })
@@ -18,7 +17,7 @@ app.use(function (req, resp, next) {
 app.post("/cadastro", function (req, res) {
   const { body } = req
 
-  res.json({ 'O OBJETO RECEBIDO NO SERVIDOR FOI': body })
+  res.json({ body })
 })
 
 

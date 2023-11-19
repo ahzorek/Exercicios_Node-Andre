@@ -33,23 +33,21 @@
           placeholder="Data de nascimento" min="2000-01-01" max="2017-12-31" required>
         <input title="Série a frequentar (1 a 9)" type="number" inputmode="numeric" name="classAttending"
           id="classAttending" placeholder="Série" min="1" max="9" step="1" required>
-        <fieldset>
-          <legend>Gênero</legend>
-          <ul>
-            <li>
-              <input type="radio" name="gender" id="male">
-              <label for="male">Masculino</label>
-            </li>
-            <li>
-              <input type="radio" name="gender" id="female">
-              <label for="female">Feminino</label>
-            </li>
-            <li>
-              <input type="radio" name="gender" id="nonbinary">
-              <label for="nonbinary">Não-binário</label>
-            </li>
-          </ul>
-        </fieldset>
+        <legend>Gênero</legend>
+        <ul>
+          <li>
+            <input type="radio" name="gender" id="male" value="male">
+            <label for="male">Masculino</label>
+          </li>
+          <li>
+            <input type="radio" name="gender" id="female" value="female">
+            <label for="female">Feminino</label>
+          </li>
+          <li>
+            <input type="radio" name="gender" id="nonbinary" value="nonbinary">
+            <label for="nonbinary">Não-binário</label>
+          </li>
+        </ul>
       </fieldset>
 
       <fieldset id="informacoesPais">
