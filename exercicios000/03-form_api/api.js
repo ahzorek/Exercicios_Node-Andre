@@ -13,8 +13,18 @@ app.use((_, resp, next) => {
   next()
 })
 
+app.get("/cadastro", (req, res) => {
+  console.log('### RECEBEU UMA REQ TIOP GET ###')
+  // const { body } = req
 
-app.post("/cadastro", function (req, res) {
+  console.log(req.query)
+
+  res.json('success')
+})
+
+app.post("/cadastro", (req, res) => {
+
+  console.log('### RECEBEU UMA REQ TIPO POST ###')
   const { body } = req
 
   res.json({ body })
@@ -23,6 +33,6 @@ app.post("/cadastro", function (req, res) {
 
 //Cria o Servidor com o express
 const porta = 3001
-app.listen(porta, function () {
+app.listen(porta, () => {
   console.log(`Servidor Rodando na porta ${porta}`)
 })

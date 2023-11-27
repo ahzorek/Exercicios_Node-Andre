@@ -1,10 +1,15 @@
+let reqIndex = 0
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('form').addEventListener('submit', async event => {
     event.preventDefault()
 
+    reqIndex++
+
+
     const FORM = event.target
     const formData = new FormData(FORM)
     const newStudent = {}
+    let serverResponse
 
     FORM.querySelectorAll('fieldset').forEach(fieldset => {
       const fieldsetName = fieldset.id
@@ -27,14 +32,30 @@ document.addEventListener('DOMContentLoaded', () => {
       })
     })
 
-    const res = await fetch("http://localhost:3001/cadastro", {
-      method: "POST",
-      body: JSON.stringify(newStudent),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
+    if (reqIndex % 2) {
+      const query = JSON.stringify(newStudent)
+      const res = await fetch(`http://localhost:3001/cadastro/${query}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
 
-    console.log(await res.json())
+      // serverResponse = await res.json()
+
+    }
+    else {
+      const res = await fetch("http://localhost:3001/cadastro", {
+        method: "POST",
+        body: JSON.stringify(newStudent),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      serverResponse = await res.json()
+    }
+
+    console.log(serverResponse)
   })
 })

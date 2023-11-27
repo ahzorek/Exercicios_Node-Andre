@@ -1,0 +1,218 @@
+/* imports, resets e normalize */
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400&display=swap');
+
+body {
+    font-family: 'Oswald', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #f0f0f0;
+    font-display: swap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.urna {
+    display: grid;
+    grid-template-columns: 1fr;
+    background-color: #fff;
+    /* border: 1px solid #ccc; */
+    padding: .5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: .2rem;
+}
+
+@media (min-width: 860px){
+    .urna {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+    }
+}
+
+.screen {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    background-color: #f5f5f5;
+    padding: .4rem;
+
+
+}
+
+.wrapper {
+    display: contents;
+}
+
+.screen img {
+    align-self: flex-end;
+    width: 150px;
+    aspect-ratio: 3/4;
+    border: 2px solid rgb(20 20 20 / .2);
+    border-radius: .2rem;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.screen div, form {
+    padding: .250rem;
+}
+
+.numero-nome {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    font-size: 1.2rem;   
+
+}
+
+
+.screen .label, .confirmar-voto{
+    font-size: .850em;
+    text-transform: uppercase;
+
+}
+
+.screen .confirmar-voto{
+    font-size: 12pt;
+    margin-top: 1rem;
+    border-top: 1px solid;
+    align-items: flex-end;
+}
+
+#number-input {
+    display: flex;
+    align-items: center;
+    column-gap: .25rem;
+    color: #222;
+}
+
+#number-input input {
+    width: fit-content;
+    max-width: 3ch;
+    font-size: 1.5rem;
+    background-color: transparent;
+    border: 1px solid #2d2d2d;
+    padding-block: .225rem;
+    border-radius: .25rem;
+    text-align: center;
+    transition: border-color 0.2s;
+
+}
+
+#number-input [type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+.teclado {
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #111;
+    padding: 1rem; 
+}
+
+.teclado form {
+    display: contents;
+}
+
+input:hover,
+input:focus {
+    outline: 2px solid darkgrey;
+
+}
+
+.numpad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 1rem; 
+    margin: 0 1rem 2rem; 
+}
+
+.numpad button {
+    padding: 1rem 2rem;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 1.2rem; 
+    background-color: #333;
+    color: #fff;
+}
+
+.numpad button:last-of-type{
+    grid-column: 2/3;
+}
+
+.numpad button:hover {
+    filter: brightness(90%);
+}
+
+.numpad button:focus {
+    outline: 4px solid currentColor;
+
+}
+
+.botoes_acao {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: .725rem;
+    align-items: flex-end;
+}
+
+button {
+    padding: 1rem; 
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.2s, color 0.2s;
+    font-size: 1rem; 
+    text-transform: uppercase;
+    color: #333;
+}
+
+.button:hover {
+    filter: brightness(90%);
+}
+
+button:focus, 
+button[type="submit"]:focus, 
+button[type="reset"]:focus {
+    outline: 2px solid darkgrey;
+}
+
+.verde {
+    background-color: #4caf50;
+    padding: 1.25rem 1rem;
+}
+
+.verde:hover {
+    background-color: #45a049;
+}
+
+.vermelho {
+    background-color: #ff5722;
+}
+
+.vermelho:hover {
+    background-color: #e64a19;
+}
+
+.branco {
+    background-color: #f2f2f2;
+}
+
+.branco:hover {
+    background-color: #f5f5f5;
+}
