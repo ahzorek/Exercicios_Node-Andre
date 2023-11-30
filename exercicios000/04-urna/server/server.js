@@ -1,17 +1,29 @@
 import express from 'express'
 import cors from 'cors'
 import { readFile, writeFile } from 'fs/promises'
+import path from 'path'
 
 const app = express()
-const PORT = 4321
+const PORT = process.env.PORT || 4321
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 app.use(express.json())
 app.use(cors())
 
+app.use(express.urlencoded({ extended: false }))
+app.use(express.static(path.join(__dirname, "View")))
+
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/view/index.html"))
+})
+
 app.get("/first_load", async (req, res) => {
+  // console.log(req.query.elec_code)
   try {
     const data = await readFile(
-      `assets/urna_config/config_${req.query.elec_code}.csv`,
+      `urna_config/config_${req.query.elec_code}.csv`,
       'utf-8'
     )
 
@@ -34,7 +46,7 @@ app.post("/create_config", async (req, res) => {
     }).join("\n")
 
     await writeFile(
-      `assets/urna_config/config_${elec_code}.csv`,
+      `urna_config/config_${elec_code}.csv`,
       csvContent,
       'utf-8'
     )
@@ -76,13 +88,13 @@ function parseCSVData(data) {
   const options = []
 
   data.split("\n").forEach(option => {
-    const [voteType, num, name, pic] = option.split(",")
+    const [tipoEleicao, numeroCandidato, nomeCandidato, urlFoto] = option.split(",")
 
     options.push({
-      voteIsAnon: voteType === 'a' ? true : false,
-      num: parseInt(num),
-      name,
-      pic
+      tipoEleicao,
+      numeroCandidato: parseInt(numeroCandidato),
+      nomeCandidato,
+      urlFoto
     })
   })
 
