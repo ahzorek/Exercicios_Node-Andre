@@ -1,18 +1,19 @@
 import express from 'express'
 import cors from 'cors'
 import { readFile, writeFile } from 'fs/promises'
+
 import path from 'path'
+const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 const app = express()
 const PORT = process.env.PORT || 4321
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
 app.use(express.json())
 app.use(cors())
 
 app.use(express.urlencoded({ extended: false }))
-app.use(express.static(path.join(__dirname, "View")))
+app.use(express.static(path.join(__dirname, "view")))
 
 
 app.get("/", (req, res) => {
