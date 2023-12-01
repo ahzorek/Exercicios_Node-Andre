@@ -26,10 +26,12 @@ let state = {
 
 function render() {
   console.warn('render called')
-  const out = document.querySelector('.screen')
-  out.innerHTML = ''
 
   const { current_screen, isLoading, data } = state
+  const out = document.querySelector('.screen')
+
+  clear(out)
+
 
   if (current_screen === INITIAL_INPUT) {
     out.innerHTML = `
@@ -69,7 +71,7 @@ function render() {
     out.innerHTML = `
         <div class="numero-nome">
           <div class="nome-candidato">
-            <span class="label">Voto </span> NULO / BRANCO
+            <span class="label">Voto </span> ${data.current_number ? 'NULO' : 'BRANCO'}
           </div>
         </div>
         <div class="confirmar-voto">
@@ -91,7 +93,9 @@ function render() {
       `
     } else {
       out.innerHTML = `
-        <h1 class="end-screen">FIM</h1>
+        <div class="end-screen">
+          <h1>FIM</h1>
+        </div>
       `
     }
   }
@@ -109,13 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const openCandidateList = document.querySelector('#candidates-info')
   openCandidateList.querySelector('h3').addEventListener('click', () => {
     const status = openCandidateList.getAttribute('data-isOpen')
-    if (status !== 'false') {
+    if (status === 'true') {
       openCandidateList.setAttribute('data-isOpen', false)
-      openCandidateList.classList.replace('open', 'closed')
       openCandidateList.querySelector('h3').innerHTML = '🔼 Abrir Candidatos'
     } else {
       openCandidateList.setAttribute('data-isOpen', true)
-      openCandidateList.classList.replace('closed', 'open')
       openCandidateList.querySelector('h3').innerHTML = '🔽 Fechar Candidatos'
     }
 
@@ -132,23 +134,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   handleNumberInput()
 
   CONFIRMA.addEventListener('click', async () => {
+    //inicializa confirmação e envio do voto
     beep.play()
     state.isLoading = true
     state.current_screen = END_SCREEN
-
     render()
 
-    await delayOutput(2000)
-    state.isLoading = false
-    trilili.play()
+    try {
+      const res = await fetch('/register_vote', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          elec_code: '002',
+          vote: (state.data.candidate_selected) ? state.data.candidate_selected.numeroCandidato : null,
+          createdAt: (new Date()).toISOString()
+        })
+      })
 
-    render()
+      if (!res.ok) throw new Error('deu ruim')
 
+      const data = await res.json()
+      console.log('sucesso:', data)
+
+      //finaliza confirmação e envio do voto com sucesso
+      await delayOutput(1200)
+      state.isLoading = false
+      trilili.play()
+
+      //anula todas as ações do botao na urna (provisorio)
+      document.querySelectorAll('button').forEach(button => {
+        button.disabled = true
+      })
+
+      render()
+
+    }
+    catch (err) {
+      console.error(err)
+    }
   })
 
   BRANCO.addEventListener('click', () => {
     beep.play()
 
+    state.data.current_number = null
     state.current_screen = CONFIRM_NULL_VOTE
     render()
   })
@@ -165,6 +196,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   Array.from(document.querySelectorAll('[data-value]')).forEach(button => {
     button.addEventListener('click', () => handleButtonNumberInput(button))
+  })
+
+  document.addEventListener('keydown', event => {
+    if (event.code === 'Space') {
+      BRANCO.click()
+    }
+    else if (event.code === 'Backspace' || event.code === 'Delete') {
+      if (state.current_screen === CONFIRM_NULL_VOTE || state.current_screen === CONFIRM_VALID_VOTE) {
+        CORRIGE.click()
+      }
+    }
+    else if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+      if (state.current_screen === CONFIRM_NULL_VOTE || state.current_screen === CONFIRM_VALID_VOTE) {
+        CONFIRMA.click()
+      }
+    }
   })
 
 })
@@ -184,21 +231,26 @@ function handleButtonNumberInput(button) {
     // console.log(button.dataset.value)
     state.data.current_number += button.dataset.value
     render()
+    button.blur()
     handleInputComplete(state.data.current_number.length)
   }
 
 }
-
 
 function handleNumberInput() {
   const numberInput = document.getElementById('number-input')
   if (numberInput) {
     numberInput.focus()
     numberInput.addEventListener('input', e => {
-      state.data.current_number = + numberInput.value
-      beep.play()
+      if (isNaN(Number(e.target.value[0])) === false) {
+        state.data.current_number = + numberInput.value
+        beep.play()
 
-      handleInputComplete(numberInput.value.length)
+        handleInputComplete(numberInput.value.length)
+        return
+      }
+      else
+        clear(e.target)
     })
   }
 }
@@ -229,7 +281,7 @@ async function delayOutput(time = 120) {
 }
 
 function fillCandidateInfo(cadidates) {
-  console.log(cadidates)
+  console.table(cadidates)
   cadidates.forEach(info => {
     const newEl = document.createElement('div')
     newEl.classList.add('candidate-item')
@@ -237,11 +289,23 @@ function fillCandidateInfo(cadidates) {
       <span>${info.numeroCandidato}</span>
       <span>${info.nomeCandidato}</span>
       <span>
-      <img src="assets/img/candidates/${info.urlFoto}" alt="Foto do Candidato">
+        <img src="assets/img/candidates/${info.urlFoto}" alt="Foto do Candidato">
       </span>
     `
-
-
     document.getElementById('candidates-info').appendChild(newEl)
   })
+}
+
+function clear(target) {
+  if (target.innerHTML) {
+    target.innerHTML = ''
+  }
+  else if (target.innerText) {
+    target.innerText = ''
+  }
+  else if (target.value) {
+    target.value = ''
+  }
+  else
+    target = ''
 }

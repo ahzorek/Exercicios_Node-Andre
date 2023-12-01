@@ -61,19 +61,16 @@ app.post("/create_config", async (req, res) => {
 
 app.post("/register_vote", async (req, res) => {
   try {
-    const { elec_code } = req.body
-
-    console.log(elec_code)
-
+    const { elec_code, vote, createdAt, id = '' } = req.body
     await writeFile(
       `db/poll_results/results_${elec_code}.csv`,
-      'voto\n',
+      `${id},${vote},${createdAt}\n`,
       {
         encoding: 'utf-8',
         flag: 'a'
       })
 
-    res.status(201).json({ status: 'success', message: 'Arquivo CSV atualizado com sucesso.' })
+    res.status(201).json({ status: 'success', message: 'Voto computado. Arquivo CSV atualizado com sucesso.' })
   } catch (error) {
     console.error('Erro ao criar o arquivo:', error)
     res.status(500).json({ error })
