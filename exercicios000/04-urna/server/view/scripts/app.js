@@ -1,4 +1,4 @@
-import { INITIAL_INPUT, CONFIRM_NULL_VOTE, CONFIRM_VALID_VOTE, END_SCREEN } from "./states.js"
+import { INITIAL_INPUT, CONFIRM_NULL_VOTE, CONFIRM_VALID_VOTE, END_SCREEN, ERROR_SCREEN } from "./states.js"
 
 const beep = new Audio("assets/sounds/beep.wav")
 const trilili = new Audio("assets/sounds/trilili_fim.wav")
@@ -16,6 +16,7 @@ const trilili = new Audio("assets/sounds/trilili_fim.wav")
 let state = {
   isLoading: true,
   keyboard: true,
+  error: null,
   current_screen: INITIAL_INPUT,
   data: {
     current_number: '',
@@ -27,7 +28,7 @@ let state = {
 function render() {
   console.warn('render called')
 
-  const { current_screen, isLoading, data } = state
+  const { current_screen, isLoading, data, error } = state
   const out = document.querySelector('.screen')
 
   clear(out)
@@ -99,6 +100,15 @@ function render() {
       `
     }
   }
+
+  else if (current_screen === ERROR_SCREEN) {
+    out.innerHTML = `
+      <div class="end-screen error">
+        <h1>Voto não registrado</h1>
+        <p>${error}</p>
+      </div>
+    `
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -106,26 +116,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const res = await fetch(url)
   const POLLDATA = await res.json()
   state.data.candidates = [...POLLDATA]
-  console.log(state)
+  // console.log(state)
+  fillCandidateInfo(state.data.candidates)
 
   render()
 
   const openCandidateList = document.querySelector('#candidates-info')
-  openCandidateList.querySelector('h3').addEventListener('click', () => {
-    const status = openCandidateList.getAttribute('data-isOpen')
-    if (status === 'true') {
-      openCandidateList.setAttribute('data-isOpen', false)
-      openCandidateList.querySelector('h3').innerHTML = '🔼 Abrir Candidatos'
-    } else {
-      openCandidateList.setAttribute('data-isOpen', true)
-      openCandidateList.querySelector('h3').innerHTML = '🔽 Fechar Candidatos'
-    }
-
-  })
-
-  fillCandidateInfo(state.data.candidates)
-
-
+  handleCandidateDrawer(openCandidateList)
 
   const CONFIRMA = document.getElementById('confirma')
   const CORRIGE = document.getElementById('corrige')
@@ -147,23 +144,24 @@ document.addEventListener('DOMContentLoaded', async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          elec_code: '002',
+          poll: '002',
           vote: (state.data.candidate_selected) ? state.data.candidate_selected.numeroCandidato : null,
           createdAt: (new Date()).toISOString()
         })
       })
 
-      if (!res.ok) throw new Error('deu ruim')
-
       const data = await res.json()
-      console.log('sucesso:', data)
+
+      if (!res.ok && data.error) throw new Error(data.error)
+
+      console.log(res.status, 'SUCESSO:', data.message)
 
       //finaliza confirmação e envio do voto com sucesso
       await delayOutput(1200)
       state.isLoading = false
       trilili.play()
 
-      //anula todas as ações do botao na urna (provisorio)
+      //anula todas as ações possiveis na urna (provisorio)
       document.querySelectorAll('button').forEach(button => {
         button.disabled = true
       })
@@ -173,6 +171,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     catch (err) {
       console.error(err)
+      state.error = err
+      state.current_screen = ERROR_SCREEN
+      render()
+
+      await delayOutput(2000) // aguarda 2seg e reinicializa processo de votação
+
+      state.error = null
+      state.data.candidate_selected = null
+      state.data.current_number = ''
+      state.current_screen = INITIAL_INPUT
+      changeScreen(INITIAL_INPUT)
+      render()
     }
   })
 
@@ -242,7 +252,7 @@ function handleNumberInput() {
   if (numberInput) {
     numberInput.focus()
     numberInput.addEventListener('input', e => {
-      if (isNaN(Number(e.target.value[0])) === false) {
+      if (!isNaN(Number(e.target.value[0]))) {
         state.data.current_number = + numberInput.value
         beep.play()
 
@@ -250,7 +260,7 @@ function handleNumberInput() {
         return
       }
       else
-        clear(e.target)
+        clear(e.target, true)
     })
   }
 }
@@ -296,16 +306,24 @@ function fillCandidateInfo(cadidates) {
   })
 }
 
-function clear(target) {
-  if (target.innerHTML) {
+function clear(target, isInput) {
+  if (isInput) target.value = ''
+
+  else {
     target.innerHTML = ''
-  }
-  else if (target.innerText) {
     target.innerText = ''
   }
-  else if (target.value) {
-    target.value = ''
-  }
-  else
-    target = ''
+}
+
+function handleCandidateDrawer(openCandidateList) {
+  openCandidateList.querySelector('h3').addEventListener('click', () => {
+    const status = openCandidateList.getAttribute('data-isOpen')
+    if (status === 'true') {
+      openCandidateList.setAttribute('data-isOpen', false)
+      openCandidateList.querySelector('h3').innerHTML = '🔼 Abrir Candidatos'
+    } else {
+      openCandidateList.setAttribute('data-isOpen', true)
+      openCandidateList.querySelector('h3').innerHTML = '🔽 Fechar Candidatos'
+    }
+  })
 }
