@@ -1,100 +1,77 @@
 import express from 'express'
 import cors from 'cors'
-import { readFile, writeFile } from 'fs/promises'
-
 import path from 'path'
+import jwt from 'jsonwebtoken'
+import cookieParser from 'cookie-parser';
+import { readFile, writeFile } from 'fs/promises'
+import { auth, apuracao, cargaInicial, registerVote, createConfig } from './routes/index.js'
+import 'dotenv/config'
+
+const PORT = process.env.PORT || 4321
+const SECRET = process.env.SECRET || 'cc7e0d44fd473002f1c42167459001140ec6389b7353f8088f4d9a95f2f596f2'
+
+const TTE = 60 * 60 * 2 // 2hours
+const blacklist = []
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 
-const app = express()
-const PORT = process.env.PORT || 4321
-
+export const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
 
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, "view")))
 
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "/view/index.html"))
+app.get("/", verifyAuthToken, (req, res) => {
+  res.sendFile(path.join(__dirname, "/view/polling_booth.html"))
 })
 
-app.get("/first_load", async (req, res) => {
-  // console.log(req.query.elec_code)
-  try {
-    const data = await readFile(
-      `urna_config/config_${req.query.elec_code}.csv`,
-      'utf-8'
-    )
+app.post("/auth", auth)
 
-    const options = parseCSVData(data)
+app.get("/apuracao", apuracao)
 
-    res.status(200).json(options)
+app.get("/first_load", cargaInicial)
 
-  } catch (error) {
-    console.error('Erro ao ler o arquivo:', error)
-    res.status(500).json({ error: 'Erro ao ler o arquivo.' })
-  }
+app.post("/create_config", createConfig)
+
+app.post("/register_vote", registerVote)
+
+app.get('/logout', (req, res) => {
+  blacklist.push(req.cookies.token)
+  console.log('BLACKLISTED TOKENS', blacklist)
+  res.clearCookie('token')
+  res.redirect('/login')
+
 })
 
-app.post("/create_config", async (req, res) => {
-  try {
-    const { elec_code, options } = req.body
-
-    const csvContent = options.map(option => {
-      return `${option.voteIsAnon ? 'a' : 'b'},${option.num},${option.name},${option.pic}`
-    }).join("\n")
-
-    await writeFile(
-      `urna_config/config_${elec_code}.csv`,
-      csvContent,
-      'utf-8'
-    )
-
-    res.status(201).json({ status: 'success', message: 'Arquivo CSV criado com sucesso.' })
-
-  } catch (error) {
-    console.error('Erro ao criar o arquivo:', error)
-    res.status(500).json({ error: 'Erro ao criar o arquivo.' })
-  }
+app.get("/login", (req, res, ctx) => {
+  res.status(200).sendFile(path.join(__dirname, "/view/login.html"))
 })
 
-app.post("/register_vote", async (req, res) => {
-  try {
-    const { elec_code, vote, createdAt, id = '' } = req.body
-    await writeFile(
-      `db/poll_results/results_${elec_code}.csv`,
-      `${id},${vote},${createdAt}\n`,
-      {
-        encoding: 'utf-8',
-        flag: 'a'
-      })
-
-    res.status(201).json({ status: 'success', message: 'Voto computado. Arquivo CSV atualizado com sucesso.' })
-  } catch (error) {
-    console.error('Erro ao criar o arquivo:', error)
-    res.status(500).json({ error })
-  }
+app.get("/test-token", verifyAuthToken, (req, res) => {
+  res.status(301).redirect('/')
 })
 
 app.listen(PORT, () => {
   console.log('Ouvindo em', PORT)
 })
 
-function parseCSVData(data) {
-  const options = []
+function verifyAuthToken(req, res, next) {
+  const token = req.cookies.token
+  console.log('VERIFY AUTH TOKEN CALL', token)
 
-  data.split("\n").forEach(option => {
-    const [tipoEleicao, numeroCandidato, nomeCandidato, urlFoto] = option.split(",")
+  // const indexTokenBlack = blacklist.findIndex(tokenLista => tokenLista == token)
+  // if (indexTokenBlack > -1) res.status(301).redirect('/login')
 
-    options.push({
-      tipoEleicao,
-      numeroCandidato: parseInt(numeroCandidato),
-      nomeCandidato,
-      urlFoto
-    })
+  jwt.verify(token, SECRET, (error, decoded) => {
+    if (error) {
+      res.status(301).redirect('/login')
+    }
+    else if (decoded) {
+      next()
+    }
+
   })
 
-  return options
 }

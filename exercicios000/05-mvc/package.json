@@ -1,5 +1,5 @@
 {
-  "name": "04-urna",
+  "name": "05-mvc",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -9,8 +9,9 @@
     "start": "nodemon server.js"
   },
   "keywords": [
-    "urna",
-    "voting"
+    "login",
+    "signup",
+    "user admin"
   ],
   "author": "Andre",
   "license": "MIT",
@@ -19,7 +20,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.0.4"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
