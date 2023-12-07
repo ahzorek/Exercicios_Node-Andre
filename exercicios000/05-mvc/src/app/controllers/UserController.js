@@ -5,7 +5,7 @@ class UserController {
   //list all
   index(req, res) {
     const users = UserRepository.findAll()
-    res.status(200).send(users)
+    res.status(200).json(users)
   }
 
   //find by id
@@ -24,10 +24,21 @@ class UserController {
 
   //save new
   store(req, res) {
-    const user = UserRepository.findByUsername(req.body.username)
-    if (user) res.status(418).send('username already exists')
+    const usernameExists = UserRepository.findByUsername(req.body.username)
+    if (usernameExists) res.status(418).send('username already exists')
+
+    const { username, password, ano, contribuicao = [], nome = null } = req.body
+    if (!username || !password) res.status(406).json('precisa de usuario e senha colega')
+
+
     else
-      UserRepository.create(req.body)
+      UserRepository.create({
+        nome: nome ? nome : username,
+        username,
+        password,
+        ano: ano ?? null,
+        contribuicao
+      })
     res.status(201).send("User cadastrado com sucesso")
   }
 

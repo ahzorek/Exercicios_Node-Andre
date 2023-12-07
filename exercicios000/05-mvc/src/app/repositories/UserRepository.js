@@ -6,6 +6,7 @@ class UserRepository {
   //CRUD
   //C for CREATE
   create(user) {
+    console.log(user)
     getUsers().push({
       id: nanoid(8),
       ...user
@@ -25,14 +26,14 @@ class UserRepository {
   }
 
   //U for UPDATE
-  update(id, user) {
+  update(id, newData) {
     const userIndex = getUserIndexById(id)
     const users = getUsers()
-    const prev = users[userIndex]
+    const prevData = users[userIndex]
 
     users[userIndex] = {
-      ...prev,
-      ...user
+      ...prevData,
+      ...newData
     }
 
     return users[userIndex]
@@ -40,7 +41,7 @@ class UserRepository {
 
   //D for DELETE
   delete(id) {
-    let userIndex = getUserIndexById(id)
+    const userIndex = getUserIndexById(id)
     getUsers().splice(userIndex, 1)
   }
 }

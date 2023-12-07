@@ -26,8 +26,14 @@ const users = [
   },
 ]
 
+//db connection
+
 function getUserById(id) {
-  return users.filter(user => user.id == id)[0]
+  return users.find(user => user.id == id)
+}
+
+function getUserByKeyValuePair(key, value) {
+  return users.find(user => user[key] == value)
 }
 
 function getUserByUsername(username) {
@@ -42,4 +48,4 @@ function getUsers() {
   return users
 }
 
-export { getUserById, getUserByUsername, getUserIndexById, getUsers }
+export { getUserById, getUserByUsername, getUserIndexById, getUsers, getUserByKeyValuePair }
